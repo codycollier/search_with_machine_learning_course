@@ -40,7 +40,10 @@ def process_filters(filters_input):
 # Our main query route.  Accepts POST (via the Search box) and GETs via the clicks on aggregations/facets
 @bp.route('/query', methods=['GET', 'POST'])
 def query():
-    opensearch = get_opensearch() # Load up our OpenSearch client from the opensearch.py file.
+
+    # Load up our OpenSearch client from the opensearch.py file.
+    opensearch = get_opensearch()
+
     # Put in your code to query opensearch.  Set error as appropriate.
     error = None
     user_query = None
@@ -73,11 +76,11 @@ def query():
     else:
         query_obj = create_query("*", [], sort, sortDir)
 
-    print("query obj: {}".format(query_obj))
-    response = None   # TODO: Replace me with an appropriate call to OpenSearch
+    # todo: Replace me with an appropriate call to OpenSearch
     # Postprocess results here if you so desire
+    print("query obj: {}".format(query_obj))
+    response = opensearch.search(body=query_obj, index="bbuy_products")
 
-    #print(response)
     if error is None:
         return render_template("search_results.jinja2", query=user_query, search_response=response,
                                display_filters=display_filters, applied_filters=applied_filters,
