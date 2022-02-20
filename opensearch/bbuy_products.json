@@ -36,6 +36,7 @@
             "releaseDate":{"type":"date"},
             "startDate":{"type":"date"},
 
+            "department":{"type":"keyword"},
             "image":{"type":"keyword"},
             "url":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
 
@@ -53,7 +54,6 @@
             "classId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
             "color":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
             "condition":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
-            "department":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
             "departmentId":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
             "features":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
             "frequentlyPurchasedWith":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},

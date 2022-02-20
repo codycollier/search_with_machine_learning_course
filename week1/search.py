@@ -109,6 +109,7 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
         "aggs": {
             # TODO(wip): FILL ME IN
             "regularPrice": { "range": { "field": "regularPrice", "ranges": [{"from": 0, "to": 5}, {"from": 5, "to": 20}, {"from": 20}] }},
+            "department": { "terms": {"field": "department", "size": 10 }},
             "missing_images": { "missing": {"field": "image"}}
         }
     }
