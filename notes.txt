@@ -28,3 +28,17 @@ curl -k -s -X GET -u $ES_CREDS https://localhost:9200/bbuy_products/_count | jq 
 curl -k -s -X GET -u $ES_CREDS https://localhost:9200/bbuy_queries/_count | jq .
 
 
+# virt
+pyenv activate search_with_ml_week1
+pyenv deactivate
+
+
+# flask
+export FLASK_ENV=development
+export FLASK_APP=week1
+flask run --port 3000
+
+# logstash
+ps aux | grep -i logstash
+ps aux | grep -i logstash | grep -v grep | tr -s ' ' | cut -f2 -d" " | xargs kill -term
+
