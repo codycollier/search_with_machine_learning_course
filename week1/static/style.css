@@ -30,15 +30,20 @@
 }
 
 .search-result{
+    padding: 10px 10px 10px 10px;
     margin-bottom: 10px;
+    overflow: auto;
 }
 
-.search-result > img{
-    padding-left: 50px;
-}
 
 .search-result-odd{
     background: lightgray;
+}
+
+.search-result-image{
+    padding-right: 10px;
+    float: left;
+    display: block;
 }
 
 .search-result-name {
