@@ -4,7 +4,7 @@
             "@timestamp":{"type":"date"},
             "@version":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},
 
-            "name": {"type": "text", "analyzer": "english"},
+            "name": {"type": "text", "analyzer": "standard"},
             "shortDescription": {"type": "text", "analyzer": "english"},
             "longDescription": {"type": "text", "analyzer": "english"},
 
