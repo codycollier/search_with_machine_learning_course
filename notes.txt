@@ -1,0 +1,30 @@
+-------------------------------------------------------------------------------
+:: Notes
+-------------------------------------------------------------------------------
+
+
+---------------------------------------
+:: Misc
+---------------------------------------
+
+# target doc counts from project template:
+Number of documents in the Product index: 1,275,077
+Number of documents in the Query Log index: 1,865,269
+
+
+---------------------------------------
+:: Reference
+---------------------------------------
+
+# get es_creds etc
+source ./.env
+
+# get the mappings
+curl -k -X GET -u admin "https://localhost:9200/bbuy_products"
+curl -k -X GET -u admin "https://localhost:9200/bbuy_queries"
+
+# get doc counts
+curl -k -s -X GET -u $ES_CREDS https://localhost:9200/bbuy_products/_count | jq .
+curl -k -s -X GET -u $ES_CREDS https://localhost:9200/bbuy_queries/_count | jq .
+
+
