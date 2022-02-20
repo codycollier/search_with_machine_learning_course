@@ -15,23 +15,29 @@ bp = Blueprint('search', __name__, url_prefix='/search')
 # display_filters -- return an array of filters that are applied that is appropriate for display
 # applied_filters -- return a String that is appropriate for inclusion in a URL as part of a query string.  This is basically the same as the input query string
 def process_filters(filters_input):
+
     # Filters look like: &filter.name=regularPrice&regularPrice.key={{ agg.key }}&regularPrice.from={{ agg.from }}&regularPrice.to={{ agg.to }}
     filters = []
     display_filters = []  # Also create the text we will use to display the filters that are applied
     applied_filters = ""
     for filter in filters_input:
+
         type = request.args.get(filter + ".type")
         display_name = request.args.get(filter + ".displayName", filter)
-        #
+        
         # We need to capture and return what filters are already applied so they can be automatically added to any existing links we display in aggregations.jinja2
         applied_filters += "&filter.name={}&{}.type={}&{}.displayName={}".format(filter, filter, type, filter,
                                                                                  display_name)
-        #TODO: IMPLEMENT AND SET filters, display_filters and applied_filters.
-        # filters get used in create_query below.  display_filters gets used by display_filters.jinja2 and applied_filters gets used by aggregations.jinja2 (and any other links that would execute a search.)
+
+        # TODO(wip): IMPLEMENT AND SET filters, display_filters and applied_filters.
+        # filters get used in create_query below.  display_filters gets used by display_filters.jinja2
+        # and applied_filters gets used by aggregations.jinja2 (and any other links that would execute a search.)
         if type == "range":
             pass
         elif type == "terms":
-            pass #TODO: IMPLEMENT
+            #TODO(wip): IMPLEMENT
+            pass
+
     print("Filters: {}".format(filters))
 
     return filters, display_filters, applied_filters
@@ -53,7 +59,9 @@ def query():
     filters = None
     sort = "_score"
     sortDir = "desc"
-    if request.method == 'POST':  # a query has been submitted
+
+    # a query has been submitted
+    if request.method == 'POST':
         user_query = request.form['query']
         if not user_query:
             user_query = "*"
@@ -64,7 +72,9 @@ def query():
         if not sortDir:
             sortDir = "desc"
         query_obj = create_query(user_query, [], sort, sortDir)
-    elif request.method == 'GET':  # Handle the case where there is no query or just loading the page
+
+    # Handle the case where there is no query or just loading the page
+    elif request.method == 'GET':
         user_query = request.args.get("query", "*")
         filters_input = request.args.getlist("filter.name")
         sort = request.args.get("sort", sort)
@@ -76,7 +86,7 @@ def query():
     else:
         query_obj = create_query("*", [], sort, sortDir)
 
-    # todo: Replace me with an appropriate call to OpenSearch
+    # TODO(done): Replace me with an appropriate call to OpenSearch
     # Postprocess results here if you so desire
     print("query obj: {}".format(query_obj))
     response = opensearch.search(body=query_obj, index="bbuy_products")
@@ -97,7 +107,14 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
             "match_all": {} # Replace me with a query that both searches and filters
         },
         "aggs": {
-            #TODO: FILL ME IN
+            # TODO(wip): FILL ME IN
+            "regularPrice": { "range": { "field": "regularPrice", "ranges": [{"from": 0, "to": 5}, {"from": 5, "to": 20}, {"from": 20}] }},
+            "missing_images": { "missing": {"field": "image"}}
         }
     }
     return query_obj
+
+
+
+
+
