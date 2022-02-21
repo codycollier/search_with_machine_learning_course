@@ -15,31 +15,57 @@ bp = Blueprint('search', __name__, url_prefix='/search')
 # display_filters -- return an array of filters that are applied that is appropriate for display
 # applied_filters -- return a String that is appropriate for inclusion in a URL as part of a query string.  This is basically the same as the input query string
 def process_filters(filters_input):
+    print("[debug] filters_input: {}".format(filters_input))
 
-    # Filters look like: &filter.name=regularPrice&regularPrice.key={{ agg.key }}&regularPrice.from={{ agg.from }}&regularPrice.to={{ agg.to }}
+    # Filters look like: 
+    #  range: &filter.name=regularPrice &regularPrice.key={{ agg.key }} &regularPrice.from={{ agg.from }} &regularPrice.to={{ agg.to }}
+    #  range: &filter.name=regularPrice &regularPrice.type=range &regularPrice.key=20.0-* &regularPrice.from=20.0 &regularPrice.to= &regularPrice.displayName=Price
+    #  terms: &filter.name=department &department.type=terms &department.key=MOBILE%20AUDIO &department.displayName=Department
+
     filters = []
     display_filters = []  # Also create the text we will use to display the filters that are applied
     applied_filters = ""
-    for filter in filters_input:
+    for filter_name in filters_input:
 
-        type = request.args.get(filter + ".type")
-        display_name = request.args.get(filter + ".displayName", filter)
+        filter_type = request.args.get(f"{filter_name}.type")
+        display_name = request.args.get(f"{filter_name}.displayName", filter_name)
         
         # We need to capture and return what filters are already applied so they can be automatically added to any existing links we display in aggregations.jinja2
-        applied_filters += "&filter.name={}&{}.type={}&{}.displayName={}".format(filter, filter, type, filter, display_name)
+        applied_filters += f"&filter.name={filter_name}&{filter_name}.type={filter_type}&{filter_name}.displayName={display_name}"
 
         # TODO(wip): implement and set filters, display_filters and applied_filters.
-        # filters get used in create_query below.  display_filters gets used by display_filters.jinja2
+        # filters get used in create_query below
+        # display_filters gets used by display_filters.jinja2
         # and applied_filters gets used by aggregations.jinja2 (and any other links that would execute a search.)
-        if type == "range":
-            filters.append(filter)
-            display_filters.append(display_name)
-        elif type == "terms":
-            filters.append(filter)
+
+        if filter_type == "range":
+
+            # Example:
+            #  filter.name=regularPrice
+            #  regularPrice.type=range
+            #  regularPrice.key=20.0-*
+            #  regularPrice.from=20.0
+            #  regularPrice.to=
+            #  regularPrice.displayName=Price
+
+            # filters.append(filter)
             display_filters.append(display_name)
 
-    print("Filters: {}".format(filters))
+        elif filter_type == "terms":
 
+            # Example:
+            #  filter.name=department
+            #  department.type=terms
+            #  department.key=MOBILE%20AUDIO
+            #  department.displayName=Department
+            field = filter_name
+            value = request.args.get(f"{filter_name}.key")
+            filters.append({"term": {field: value}})
+
+            display_filters.append(display_name)
+
+
+    print("[debug] Filters: {}".format(filters))
     return filters, display_filters, applied_filters
 
 
@@ -88,7 +114,7 @@ def query():
 
     # TODO(done): Replace me with an appropriate call to OpenSearch
     # Postprocess results here if you so desire
-    print("query obj: {}".format(query_obj))
+    print("[debug] query obj: {}".format(query_obj))
     response = opensearch.search(body=query_obj, index="bbuy_products")
 
     if error is None:
@@ -100,13 +126,13 @@ def query():
 
 
 def create_query(user_query, filters, sort="_score", sortDir="desc"):
-    print("Query: {} Filters: {} Sort: {}".format(user_query, filters, sort))
+    print("[debug] Query: {} Filters: {} Sort: {}".format(user_query, filters, sort))
 
     query_obj = {
         'size': 10,
     }
 
-    # TODO(done): Aggregations
+    # TODO(done): aggregations
     query_obj["aggs"] = {
             "regularPrice": { "range": { "field": "regularPrice", "ranges": [{"from": 0, "to": 5}, {"from": 5, "to": 20}, {"from": 20}] }},
             "department": { "terms": {"field": "department", "size": 10 }},
@@ -114,10 +140,21 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
             }
 
     # TODO(wip): query and filters
+    # "query": {"bool": {
+    #    "must": [ {"multi_match": {"query": "bass", "fields": ["name", "longDescription", "shortDescription"] } } ],
+    #    "filter": [ {"term": {"department": "AUDIO"}} ]
+    #    }}
     if user_query in (None, "*"):
-        query_obj["query"] = {"match_all": {}}
+        query_obj["query"] = {"bool": {
+            "must": [ {"match_all": {}} ],
+            "filter": filters
+            }}
     elif user_query:
-        query_obj["query"] = {"multi_match": {"query": user_query, "fields": ["name", "longDescription", "shortDescription"]}}
+        query_obj["query"] = {"bool": {
+            "must": [ {"multi_match": {"query": user_query, "fields": ["name", "longDescription", "shortDescription"] } } ],
+            "filter": filters
+            }}
+
 
 
     return query_obj
