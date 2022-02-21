@@ -101,19 +101,25 @@ def query():
 
 def create_query(user_query, filters, sort="_score", sortDir="desc"):
     print("Query: {} Filters: {} Sort: {}".format(user_query, filters, sort))
+
     query_obj = {
         'size': 10,
-        "query": {
-            # TODO(wip): Replace me with a query that both searches and filters
-            "match_all": {}
-        },
-        "aggs": {
-            # TODO(done): fill me in
+    }
+
+    # TODO(done): Aggregations
+    query_obj["aggs"] = {
             "regularPrice": { "range": { "field": "regularPrice", "ranges": [{"from": 0, "to": 5}, {"from": 5, "to": 20}, {"from": 20}] }},
             "department": { "terms": {"field": "department", "size": 10 }},
             "missing_images": { "missing": {"field": "image"}}
-        }
-    }
+            }
+
+    # TODO(wip): query and filters
+    if user_query in (None, "*"):
+        query_obj["query"] = {"match_all": {}}
+    elif user_query:
+        query_obj["query"] = {"multi_match": {"query": user_query, "fields": ["name", "longDescription", "shortDescription"]}}
+
+
     return query_obj
 
 
