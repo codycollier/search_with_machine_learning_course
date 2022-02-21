@@ -177,7 +177,7 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
             }}
     elif user_query:
         query_obj["query"] = {"bool": {
-            "must": [ {"multi_match": {"query": user_query, "fields": ["name^100", "longDescription^10", "shortDescription^25"] } } ],
+            "must": [ {"multi_match": {"query": user_query, "fields": ["name^100", "longDescription", "shortDescription"] } } ],
             "filter": filters
             }}
 
