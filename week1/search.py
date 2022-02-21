@@ -47,8 +47,15 @@ def process_filters(filters_input):
             #  regularPrice.from=20.0
             #  regularPrice.to=
             #  regularPrice.displayName=Price
+            #
+            # {"range": {"regularPrice": {"gte": 100.0, "lte": 500}}}
 
-            # filters.append(filter)
+            field = filter_name
+            gte_val = request.args.get(f"{filter_name}.from", 0)
+            lte_val = request.args.get(f"{filter_name}.to", '')
+            if lte_val == "": lte_val = 123456789
+            filters.append({"range": {field: {"gte": float(gte_val), "lte": float(lte_val)}}})
+
             display_filters.append(display_name)
 
         elif filter_type == "terms":
@@ -58,6 +65,9 @@ def process_filters(filters_input):
             #  department.type=terms
             #  department.key=MOBILE%20AUDIO
             #  department.displayName=Department
+            #
+            #  {"term": {"department": "AUDIO"}},
+
             field = filter_name
             value = request.args.get(f"{filter_name}.key")
             filters.append({"term": {field: value}})
