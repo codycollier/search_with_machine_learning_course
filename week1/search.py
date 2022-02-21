@@ -35,7 +35,7 @@ def process_filters(filters_input):
         # We need to capture and return what filters are already applied so they can be automatically added to any existing links we display in aggregations.jinja2
         applied_filters += f"&filter.name={filter_name}&{filter_name}.type={filter_type}&{filter_name}.displayName={display_name}"
 
-        # TODO(wip): implement and set filters, display_filters and applied_filters.
+        # TODO(done): implement and set filters, display_filters and applied_filters.
         # filters get used in create_query below
         # display_filters gets used by display_filters.jinja2
         # and applied_filters gets used by aggregations.jinja2 (and any other links that would execute a search.)
@@ -158,12 +158,14 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
 
     # TODO(done): aggregations
     query_obj["aggs"] = {
-            "regularPrice": { "range": { "field": "regularPrice", "ranges": [{"from": 0, "to": 5}, {"from": 5, "to": 20}, {"from": 20}] }},
+            "regularPrice": { "range": { "field": "regularPrice", "ranges": [
+                {"from": 0, "to": 5}, {"from": 5, "to": 20}, {"from": 20, "to": 100},
+                {"from": 100, "to": 500}, {"from": 500}] }},
             "department": { "terms": {"field": "department", "size": 10 }},
             "missing_images": { "missing": {"field": "image"}}
             }
 
-    # TODO(wip): query and filters
+    # TODO(done): query and filters
     # "query": {"bool": {
     #    "must": [ {"multi_match": {"query": "bass", "fields": ["name", "longDescription", "shortDescription"] } } ],
     #    "filter": [ {"term": {"department": "AUDIO"}} ]
@@ -175,7 +177,7 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
             }}
     elif user_query:
         query_obj["query"] = {"bool": {
-            "must": [ {"multi_match": {"query": user_query, "fields": ["name", "longDescription", "shortDescription"] } } ],
+            "must": [ {"multi_match": {"query": user_query, "fields": ["name^100", "longDescription^10", "shortDescription^25"] } } ],
             "filter": filters
             }}
 
