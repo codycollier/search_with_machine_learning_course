@@ -18,8 +18,10 @@ def process_filters(filters_input):
     print("[debug] filters_input: {}".format(filters_input))
 
     # Filters look like: 
-    #  range: &filter.name=regularPrice &regularPrice.key={{ agg.key }} &regularPrice.from={{ agg.from }} &regularPrice.to={{ agg.to }}
+    #  range: &filter.name=regularPrice &regularPrice.type=range &regularPrice.key={{ agg.key }} &regularPrice.from={{ agg.from }}
+    #           &regularPrice.to={{ agg.to }} &regularPrice.displayName=Price
     #  range: &filter.name=regularPrice &regularPrice.type=range &regularPrice.key=20.0-* &regularPrice.from=20.0 &regularPrice.to= &regularPrice.displayName=Price
+    #  terms: &filter.name=department&department.type=terms&department.key={{ agg.key }}&department.displayName=Department
     #  terms: &filter.name=department &department.type=terms &department.key=MOBILE%20AUDIO &department.displayName=Department
 
     filters = []
@@ -43,19 +45,27 @@ def process_filters(filters_input):
             # Example:
             #  filter.name=regularPrice
             #  regularPrice.type=range
+            #  regularPrice.displayName=Price
             #  regularPrice.key=20.0-*
             #  regularPrice.from=20.0
             #  regularPrice.to=
-            #  regularPrice.displayName=Price
-            #
+            q_key = request.args.get(f"{filter_name}.key", '')
+            q_from = request.args.get(f"{filter_name}.from", '')
+            q_to = request.args.get(f"{filter_name}.to", '')
+            
+            # build filter for query
             # {"range": {"regularPrice": {"gte": 100.0, "lte": 500}}}
-
             field = filter_name
-            gte_val = request.args.get(f"{filter_name}.from", 0)
-            lte_val = request.args.get(f"{filter_name}.to", '')
-            if lte_val == "": lte_val = 123456789
+            gte_val = 0 if q_from == '' else float(q_from)
+            lte_val = 123456789 if q_to == '' else float(q_to)
             filters.append({"range": {field: {"gte": float(gte_val), "lte": float(lte_val)}}})
 
+            # finish type specific applied filter
+            applied_filters += f"&{filter_name}.key={q_key}"
+            applied_filters += f"&{filter_name}.from={q_from}"
+            applied_filters += f"&{filter_name}.to={q_to}"
+
+            # add a display string
             display_filters.append(display_name)
 
         elif filter_type == "terms":
@@ -63,15 +73,19 @@ def process_filters(filters_input):
             # Example:
             #  filter.name=department
             #  department.type=terms
-            #  department.key=MOBILE%20AUDIO
             #  department.displayName=Department
-            #
+            #  department.key=MOBILE%20AUDIO
+            q_key = request.args.get(f"{filter_name}.key")
+
+            # build filter for query
             #  {"term": {"department": "AUDIO"}},
-
             field = filter_name
-            value = request.args.get(f"{filter_name}.key")
-            filters.append({"term": {field: value}})
+            filters.append({"term": {field: q_key}})
 
+            # finish type specific applied filter
+            applied_filters += f"&{filter_name}.key={q_key}"
+
+            # add a display string
             display_filters.append(display_name)
 
 
