@@ -2,13 +2,31 @@
 import pandas as pd
 import numpy as np
 
+# cmc tmp
+im1_shown = False
+im2_shown = False
+
+
 def binary_func(x):
     if x > 0:
         return 1
     return 0
 
+
 def step(x):
-    print("IMPLEMENT ME: step(x) a step function with a simple heuristic that buckets grades")
+
+    # ------------------------------------------------------------------------
+    # cmc todo():
+    # . print("IMPLEMENT ME: step(x) a step function with a simple heuristic that buckets grades")
+    #
+    # reference:
+    # . adapted from ltr_toy + class instructions
+    #
+    global im1_shown
+    if not im1_shown:
+        print("\n     >>>>>>>>>> IMPLEMENT ME: step(x) a step function with a simple heuristic that buckets grades \n")
+        im1_shown = True
+
     return rng.choice([0,0.5, 1.0])
 
 
@@ -28,7 +46,19 @@ def apply_click_model(data_frame, click_model_type="binary", downsample=True):
             data_frame = down_sample_continuous(data_frame)
     elif click_model_type == "heuristic":
         data_frame["grade"] = (data_frame["clicks"]/data_frame["num_impressions"]).fillna(0).apply(lambda x: step(x))
-        print("IMPLEMENT ME: apply_click_model(): downsampling")
+
+        # ------------------------------------------------------------------------
+        # cmc todo():
+        # . print("IMPLEMENT ME: apply_click_model(): downsampling")
+        #
+        # reference:
+        # . adapted from ltr_toy + class instructions
+        #
+        global im2_shown
+        if not im2_shown:
+            print("\n     >>>>>>>>>> IMPLEMENT ME: apply_click_model(): downsampling \n")
+            im2_shown = True
+
     return data_frame
 
 # https://stackoverflow.com/questions/55119651/downsampling-for-more-than-2-classes

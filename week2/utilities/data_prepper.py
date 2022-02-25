@@ -9,6 +9,10 @@ import os
 
 # from importlib import reload
 
+# cmc-tmp
+im1_shown = False
+im2_shown = False
+
 class DataPrepper:
     opensearch = None
     index_name = "bbuy_products"
@@ -232,8 +236,19 @@ class DataPrepper:
         log_query = lu.create_feature_log_query(key, query_doc_ids, click_prior_query, self.featureset_name,
                                                 self.ltr_store_name,
                                                 size=len(query_doc_ids), terms_field=terms_field)
+        # ------------------------------------------------------------------------
+        # cmc todo():
+        # print("IMPLEMENT ME: __log_ltr_query_features: Extract log features out of the LTR:EXT response and place in a data frame")
+        #
+        # reference:
+        # . adapted from ltr_toy + class instructions
+        #
         # IMPLEMENT_START --
-        print("IMPLEMENT ME: __log_ltr_query_features: Extract log features out of the LTR:EXT response and place in a data frame")
+        global im1_shown
+        if not im1_shown:
+            print("\n     >>>>>>>>>> IMPLEMENT ME: __log_ltr_query_features: Extract log features out of the LTR:EXT response and place in a data frame \n")
+            im1_shown = True
+
         # Loop over the hits structure returned by running `log_query` and then extract out the features from the response per query_id and doc id.  Also capture and return all query/doc pairs that didn't return features
         # Your structure should look like the data frame below
         feature_results = {}
@@ -301,5 +316,17 @@ class DataPrepper:
 
     # Determine the number of clicks for this sku given a query (represented by the click group)
     def __num_clicks(self, all_skus_for_query, test_sku):
-        print("IMPLEMENT ME: __num_clicks(): Return how many clicks the given sku received in the set of skus passed ")
+
+        # ------------------------------------------------------------------------
+        # cmc todo():
+        # print("IMPLEMENT ME: __num_clicks(): Return how many clicks the given sku received in the set of skus passed ")
+        #
+        # reference:
+        # . adapted from ltr_toy + class instructions
+        #
+        global im2_shown
+        if not im2_shown:
+            print("\n     >>>>>>>>>> IMPLEMENT ME: __num_clicks(): Return how many clicks the given sku received in the set of skus passed \n")
+            im2_shown = True
+
         return 0
