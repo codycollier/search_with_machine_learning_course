@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 
 # cmc tmp
-im1_shown = False
 im2_shown = False
 
 
@@ -14,20 +13,20 @@ def binary_func(x):
 
 
 def step(x):
-
     # ------------------------------------------------------------------------
-    # cmc todo():
+    # cmc todo(done):
     # . print("IMPLEMENT ME: step(x) a step function with a simple heuristic that buckets grades")
     #
     # reference:
-    # . adapted from ltr_toy + class instructions
+    # . adapted from class instructions
     #
-    global im1_shown
-    if not im1_shown:
-        print("\n     >>>>>>>>>> IMPLEMENT ME: step(x) a step function with a simple heuristic that buckets grades \n")
-        im1_shown = True
+    val = 0
+    if   x >= 0.00 and x < 0.05: val = 0.0
+    elif x >= 0.05 and x < 0.10: val = 0.5
+    elif x >= 0.10 and x < 0.30: val = 0.75
+    elif x >= 0.3:               val = 1.0
 
-    return rng.choice([0,0.5, 1.0])
+    return val
 
 
 rng = np.random.default_rng(123456)
@@ -48,16 +47,14 @@ def apply_click_model(data_frame, click_model_type="binary", downsample=True):
         data_frame["grade"] = (data_frame["clicks"]/data_frame["num_impressions"]).fillna(0).apply(lambda x: step(x))
 
         # ------------------------------------------------------------------------
-        # cmc todo():
+        # cmc todo(done):
         # . print("IMPLEMENT ME: apply_click_model(): downsampling")
         #
         # reference:
-        # . adapted from ltr_toy + class instructions
+        # . adapted from class instructions
         #
-        global im2_shown
-        if not im2_shown:
-            print("\n     >>>>>>>>>> IMPLEMENT ME: apply_click_model(): downsampling \n")
-            im2_shown = True
+        if downsample:
+            data_frame = down_sample_buckets(data_frame)
 
     return data_frame
 

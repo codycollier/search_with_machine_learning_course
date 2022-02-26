@@ -236,11 +236,11 @@ class DataPrepper:
                                                 self.ltr_store_name,
                                                 size=len(query_doc_ids), terms_field=terms_field)
         # ------------------------------------------------------------------------
-        # cmc todo():
+        # cmc todo(done):
         # print("IMPLEMENT ME: __log_ltr_query_features: Extract log features out of the LTR:EXT response and place in a data frame")
         #
         # reference:
-        # . adapted from ltr_toy + class instructions
+        # . adapted from class instructions
         #
         # IMPLEMENT_START --
         """ reference:
@@ -269,7 +269,6 @@ class DataPrepper:
         feature_results["doc_id"] = []
         feature_results["query_id"] = []
         feature_results["sku"] = []
-        rng = np.random.default_rng(12345)
 
         # run queries and collect feature data
         for doc_id in query_doc_ids:
