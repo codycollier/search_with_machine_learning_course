@@ -10,7 +10,6 @@ import os
 # from importlib import reload
 
 # cmc-tmp
-im1_shown = False
 im2_shown = False
 
 class DataPrepper:
@@ -244,12 +243,9 @@ class DataPrepper:
         # . adapted from ltr_toy + class instructions
         #
         # IMPLEMENT_START --
-        global im1_shown
-        if not im1_shown:
-            print("\n     >>>>>>>>>> IMPLEMENT ME: __log_ltr_query_features: Extract log features out of the LTR:EXT response and place in a data frame \n")
-            im1_shown = True
-
-        # Loop over the hits structure returned by running `log_query` and then extract out the features from the response per query_id and doc id.  Also capture and return all query/doc pairs that didn't return features
+        """ reference:
+        # Loop over the hits structure returned by running `log_query` and then extract out the features from the
+        # response per query_id and doc id.  Also capture and return all query/doc pairs that didn't return features
         # Your structure should look like the data frame below
         feature_results = {}
         feature_results["doc_id"] = []  # capture the doc id so we can join later
@@ -264,6 +260,47 @@ class DataPrepper:
             feature_results["sku"].append(doc_id)  # ^^^
             feature_results["salePrice"].append(rng.random())
             feature_results["name_match"].append(rng.random())
+        frame = pd.DataFrame(feature_results)
+        return frame.astype({'doc_id': 'int64', 'query_id': 'int64', 'sku': 'int64'})
+        """
+
+        # initialize the dict used to derive the dataframe
+        feature_results = {}
+        feature_results["doc_id"] = []
+        feature_results["query_id"] = []
+        feature_results["sku"] = []
+        rng = np.random.default_rng(12345)
+
+        # run queries and collect feature data
+        for doc_id in query_doc_ids:
+
+            # query
+            qr = self.opensearch.search(body=log_query, index=self.index_name)
+
+            # pull out the data and put it in the feature dict
+            # nvpairs = qr["hits"]["hits"][0]["fields"]["_ltrlog"][0]["log_entry"]
+            for hit in  qr["hits"]["hits"]:
+                doc_id = hit["_id"]
+                # get the dynamic feature name/value pairs
+                for fll in hit["fields"]["_ltrlog"]:
+                    fnvpairs = fll["log_entry"]
+
+                # set the main vals
+                feature_results["doc_id"].append(doc_id)
+                feature_results["query_id"].append(query_id)
+                feature_results["sku"].append(doc_id)
+
+                # set the dynamic feature name value pairs
+                # print(f"[DEBUG] >>>> fnvpairs: {fnvpairs}")
+                for f in fnvpairs:
+                    fname = f["name"]
+                    fvalue = f.get("value", 0)
+                    if fname not in feature_results: feature_results[fname] = []
+                    feature_results[fname].append(fvalue)
+
+        # create and return the dataframe
+        # import pprint
+        # pprint.pprint(feature_results)
         frame = pd.DataFrame(feature_results)
         return frame.astype({'doc_id': 'int64', 'query_id': 'int64', 'sku': 'int64'})
         # IMPLEMENT_END

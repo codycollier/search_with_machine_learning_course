@@ -2,26 +2,37 @@ import json
 
 import requests
 
-# cmc tmp
-im1_shown = False
-
 def create_rescore_ltr_query(user_query, query_obj, click_prior_query, ltr_model_name, ltr_store_name,
                              active_features=None, rescore_size=500, main_query_weight=1, rescore_query_weight=2):
-
     # ------------------------------------------------------------------------
-    # cmc todo(wip):
+    # cmc todo(done):
     # .  print("IMPLEMENT ME: create_rescore_ltr_query")
     # . Create the base query, use a much bigger window
     # . add on the rescore
     #
     # reference:
-    # . adapted from ltr_toy + class instructions
+    # . adapted from ltr_toy + class instructions + class slack
     #
-    global im1_shown
-    if not im1_shown:
-        print("\n     >>>>>>>>>> IMPLEMENT ME: create_rescore_ltr_query \n")
-        im1_shown = True
-
+    rescore = {
+        "window_size": rescore_size,
+        "query": {
+            "rescore_query":{
+                "sltr": {
+                    "params": {
+                        "keywords": user_query,
+                        "click_prior_query": click_prior_query
+                    },
+                    "model": ltr_model_name,
+                    "store": ltr_store_name,
+                }
+            },
+            "query_weight": main_query_weight,
+            "rescore_query_weight": rescore_query_weight
+        },
+    }
+    query_obj["rescore"] = rescore
+    if active_features is not None and len(active_features) > 0:
+        query_obj["rescore"]["query"]["rescore_query"]["sltr"]["active_features"] = active_features
     return query_obj
 
 # take an existing query and add in an SLTR so we can use it for explains to see how much SLTR contributes
