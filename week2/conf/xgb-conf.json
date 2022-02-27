@@ -1,4 +1,4 @@
 {
   "objective": "reg:logistic",
-  "max_depth": 8 
+  "max_depth": 8
 }
