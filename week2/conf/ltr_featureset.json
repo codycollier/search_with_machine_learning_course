@@ -51,7 +51,7 @@
               {
                 "field_value_factor": {
                   "field": "salePrice",
-                  "missing": 100100
+                  "missing": 0
                 }
               }
             ],
