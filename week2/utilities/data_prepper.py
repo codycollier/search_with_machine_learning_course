@@ -9,9 +9,6 @@ import os
 
 # from importlib import reload
 
-# cmc-tmp
-im2_shown = False
-
 class DataPrepper:
     opensearch = None
     index_name = "bbuy_products"
@@ -352,17 +349,9 @@ class DataPrepper:
 
     # Determine the number of clicks for this sku given a query (represented by the click group)
     def __num_clicks(self, all_skus_for_query, test_sku):
-
         # ------------------------------------------------------------------------
-        # cmc todo():
+        # cmc todo(done):
         # print("IMPLEMENT ME: __num_clicks(): Return how many clicks the given sku received in the set of skus passed ")
         #
-        # reference:
-        # . adapted from ltr_toy + class instructions
-        #
-        global im2_shown
-        if not im2_shown:
-            print("\n     >>>>>>>>>> IMPLEMENT ME: __num_clicks(): Return how many clicks the given sku received in the set of skus passed \n")
-            im2_shown = True
-
-        return 0
+        count = all_skus_for_query.count(test_sku)
+        return count

@@ -2,9 +2,6 @@
 import pandas as pd
 import numpy as np
 
-# cmc tmp
-im2_shown = False
-
 
 def binary_func(x):
     if x > 0:
