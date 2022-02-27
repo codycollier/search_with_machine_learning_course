@@ -70,7 +70,7 @@
               {
                 "field_value_factor": {
                   "field": "regularPrice",
-                  "missing": 100100
+                  "missing": 0
                 }
               }
             ],
@@ -108,7 +108,7 @@
               {
                 "field_value_factor": {
                   "field": "salesRankMediumTerm",
-                  "missing": 0
+                  "missing": 100100
                 }
               }
             ],
@@ -127,7 +127,7 @@
               {
                 "field_value_factor": {
                   "field": "salesRankLongTerm",
-                  "missing": 0
+                  "missing": 100100
                 }
               }
             ],
